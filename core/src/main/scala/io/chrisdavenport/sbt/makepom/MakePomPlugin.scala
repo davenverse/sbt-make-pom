@@ -46,6 +46,7 @@ object MakePomPlugin extends AutoPlugin {
         val path = Paths.get(f.toURI())
         val moveTo = path.getParent().getParent().getParent()
         val file = moveTo.resolve("pom.xml")
+        Files.delete(file)
         Files.move(path, file)
       }
     }
