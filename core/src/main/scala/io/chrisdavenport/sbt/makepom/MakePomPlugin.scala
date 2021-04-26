@@ -31,8 +31,8 @@ object MakePomPlugin extends AutoPlugin {
 
         if (!Files.exists(file)) throw new RuntimeException(s"MakePom: Files do not match as $file does not exist") with NoStackTrace
         else {
-          val pathText = Files.readString(path)
-          val fileText = Files.readString(file)
+          val pathText = new String(Files.readAllBytes(path))
+          val fileText = new String(Files.readAllBytes(file))
           if (pathText != fileText) throw new RuntimeException(s"MakePom: Generated file and current file do not match") with NoStackTrace
           else ()
         }
