@@ -33,13 +33,27 @@ ThisBuild / githubWorkflowPublish := Seq(
 lazy val `sbt-make-pom` = project.in(file("."))
   .disablePlugins(MimaPlugin)
   .enablePlugins(NoPublishPlugin)
-  .aggregate(core)
+  .aggregate(core, manual)
 
 lazy val core = project.in(file("core"))
   .enablePlugins(SbtPlugin)
   .settings(
     name := "sbt-make-pom",
 
+    scriptedLaunchOpts := { scriptedLaunchOpts.value ++
+      Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
+    },
+    scriptedBufferLog := false,
+    test := {
+      (Test / test).value
+      scripted.toTask("").value
+    }
+  )
+
+lazy val manual = project.in(file("manual"))
+  .enablePlugins(SbtPlugin)
+  .settings(
+    name := "sbt-make-pom-manual",
     scriptedLaunchOpts := { scriptedLaunchOpts.value ++
       Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
     },
@@ -61,7 +75,7 @@ inThisBuild(List(
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
 
   pomIncludeRepository := { _ => false},
-  scalacOptions in (Compile, doc) ++= Seq(
+  Compile / doc / scalacOptions  ++= Seq(
       "-groups",
       "-sourcepath", (baseDirectory in LocalRootProject).value.getAbsolutePath,
       "-doc-source-url", "https://github.com/ChristopherDavenport/sbt-make-pom/blob/v" + version.value + "€{FILE_PATH}.scala"
